@@ -1,0 +1,24 @@
+# slurm 数据库配置
+mysql:
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  dbname: slurm_acct_db
+  password: 81SLURM@@rabGTjN7
+  clustername: cluster
+  databaseencode: latin1
+
+# 服务端口设置
+service:
+  port: 8972
+
+# slurm 默认Qos设置
+slurm:
+  defaultqos: normal
+  # 指定Slurm安装目录；如不指定改行，则默认slurm安装在/usr目录下，sbatch等命令的全路径为/usr/bin/sbatch
+  slurmpath: /home-beegfs/apps/slurm
+
+# module profile文件路径
+modulepath:
+  path: /lustre/software/module/5.2.0/init/profile.sh
+  
