@@ -2220,7 +2220,7 @@ func (s *serverConfig) GetClusterInfo(ctx context.Context, in *pb.GetClusterInfo
 				runningGpus = 0
 				// noAvailableGpus = noAvailableNodes * singerNodeGpusInt
 				// idleGpus = idleNodes * singerNodeGpusInt
-				idleGpus = totalGpus
+				idleGpus = totalGpus - noAvailableGpus
 			}
 			resultRatio := float64(runningNodes) / float64(totalNodes)
 			percentage := int(resultRatio * 100) // 保留整数
