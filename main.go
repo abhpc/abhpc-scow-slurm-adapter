@@ -169,7 +169,7 @@ func (s *serverUser) AddUserToAccount(ctx context.Context, in *pb.AddUserToAccou
 	if err != nil {
 		// 0907 注释
 		for _, v := range partitions {
-			createUserCmd := fmt.Sprintf("sacctmgr -i create user name='%s' partition='%s' account='%s'", in.UserId, v, in.AccountName)
+			createUserCmd := fmt.Sprintf("sacctmgr -i create user name='%s' account='%s'", in.UserId, in.AccountName)
 			modifyUserCmd := fmt.Sprintf("sacctmgr -i modify user %s set qos='%s' DefaultQOS='%s'", in.UserId, baseQos, defaultQos)
 			retcode01 := utils.ExecuteShellCommand(createUserCmd)
 			if retcode01 != 0 {
@@ -213,7 +213,7 @@ func (s *serverUser) AddUserToAccount(ctx context.Context, in *pb.AddUserToAccou
 	if err != nil {
 		// 0907 注释
 		for _, v := range partitions {
-			createUserCmd := fmt.Sprintf("sacctmgr -i create user name='%s' partition='%s' account='%s'", in.UserId, v, in.AccountName)
+			createUserCmd := fmt.Sprintf("sacctmgr -i create user name='%s' account='%s'", in.UserId, in.AccountName)
 			modifyUserCmd := fmt.Sprintf("sacctmgr -i modify user %s set qos='%s' DefaultQOS='%s'", in.UserId, baseQos, defaultQos)
 			retCode1 := utils.ExecuteShellCommand(createUserCmd)
 			if retCode1 != 0 {
@@ -829,7 +829,7 @@ func (s *serverAccount) CreateAccount(ctx context.Context, in *pb.CreateAccountR
 			return nil, st.Err()
 		}
 		for _, p := range partitions {
-			createUserCmd := fmt.Sprintf("sacctmgr -i create user name=%s partition=%s account=%s", in.OwnerUserId, p, in.AccountName)
+			createUserCmd := fmt.Sprintf("sacctmgr -i create user name=%s account=%s", in.OwnerUserId, in.AccountName)
 			modifyUserCmd := fmt.Sprintf("sacctmgr -i modify user %s set qos=%s DefaultQOS=%s", in.OwnerUserId, baseQos, defaultQos)
 			retcode01 := utils.ExecuteShellCommand(createUserCmd)
 			if retcode01 != 0 {
