@@ -168,7 +168,7 @@ func (s *serverUser) AddUserToAccount(ctx context.Context, in *pb.AddUserToAccou
 
 	if err != nil {
 		// 0907 注释
-		for _, v := range partitions {
+		//for _, v := range partitions {
 			createUserCmd := fmt.Sprintf("sacctmgr -i create user name='%s' account='%s'", in.UserId, in.AccountName)
 			modifyUserCmd := fmt.Sprintf("sacctmgr -i modify user %s set qos='%s' DefaultQOS='%s'", in.UserId, baseQos, defaultQos)
 			retcode01 := utils.ExecuteShellCommand(createUserCmd)
@@ -189,7 +189,7 @@ func (s *serverUser) AddUserToAccount(ctx context.Context, in *pb.AddUserToAccou
 				st, _ = st.WithDetails(errInfo)
 				return nil, st.Err()
 			}
-		}
+		//}
 
 		// var wg sync.WaitGroup
 		// for _, p := range partitions {
@@ -212,7 +212,7 @@ func (s *serverUser) AddUserToAccount(ctx context.Context, in *pb.AddUserToAccou
 
 	if err != nil {
 		// 0907 注释
-		for _, v := range partitions {
+		//for _, v := range partitions {
 			createUserCmd := fmt.Sprintf("sacctmgr -i create user name='%s' account='%s'", in.UserId, in.AccountName)
 			modifyUserCmd := fmt.Sprintf("sacctmgr -i modify user %s set qos='%s' DefaultQOS='%s'", in.UserId, baseQos, defaultQos)
 			retCode1 := utils.ExecuteShellCommand(createUserCmd)
@@ -233,7 +233,7 @@ func (s *serverUser) AddUserToAccount(ctx context.Context, in *pb.AddUserToAccou
 				st, _ = st.WithDetails(errInfo)
 				return nil, st.Err()
 			}
-		}
+		//}
 
 		// var wg sync.WaitGroup
 		// for _, p := range partitions {
@@ -828,7 +828,7 @@ func (s *serverAccount) CreateAccount(ctx context.Context, in *pb.CreateAccountR
 			st, _ = st.WithDetails(errInfo)
 			return nil, st.Err()
 		}
-		for _, p := range partitions {
+		//for _, p := range partitions {
 			createUserCmd := fmt.Sprintf("sacctmgr -i create user name=%s account=%s", in.OwnerUserId, in.AccountName)
 			modifyUserCmd := fmt.Sprintf("sacctmgr -i modify user %s set qos=%s DefaultQOS=%s", in.OwnerUserId, baseQos, defaultQos)
 			retcode01 := utils.ExecuteShellCommand(createUserCmd)
@@ -849,7 +849,7 @@ func (s *serverAccount) CreateAccount(ctx context.Context, in *pb.CreateAccountR
 				st, _ = st.WithDetails(errInfo)
 				return nil, st.Err()
 			}
-		}
+		//}
 		return &pb.CreateAccountResponse{}, nil
 	}
 
