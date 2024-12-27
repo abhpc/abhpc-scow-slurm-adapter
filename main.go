@@ -169,26 +169,26 @@ func (s *serverUser) AddUserToAccount(ctx context.Context, in *pb.AddUserToAccou
 	if err != nil {
 		// 0907 注释
 		//for _, v := range partitions {
-			createUserCmd := fmt.Sprintf("sacctmgr -i create user name='%s' account='%s'", in.UserId, in.AccountName)
-			modifyUserCmd := fmt.Sprintf("sacctmgr -i modify user %s set qos='%s' DefaultQOS='%s'", in.UserId, baseQos, defaultQos)
-			retcode01 := utils.ExecuteShellCommand(createUserCmd)
-			if retcode01 != 0 {
-				errInfo := &errdetails.ErrorInfo{
-					Reason: "EXEC_COMMAND_FAILED",
-				}
-				st := status.New(codes.AlreadyExists, "Command exec fail.")
-				st, _ = st.WithDetails(errInfo)
-				return nil, st.Err()
+		createUserCmd := fmt.Sprintf("sacctmgr -i create user name='%s' account='%s'", in.UserId, in.AccountName)
+		modifyUserCmd := fmt.Sprintf("sacctmgr -i modify user %s set qos='%s' DefaultQOS='%s'", in.UserId, baseQos, defaultQos)
+		retcode01 := utils.ExecuteShellCommand(createUserCmd)
+		if retcode01 != 0 {
+			errInfo := &errdetails.ErrorInfo{
+				Reason: "EXEC_COMMAND_FAILED",
 			}
-			retcode02 := utils.ExecuteShellCommand(modifyUserCmd)
-			if retcode02 != 0 {
-				errInfo := &errdetails.ErrorInfo{
-					Reason: "EXEC_COMMAND_FAILED",
-				}
-				st := status.New(codes.AlreadyExists, "Command exec fail.")
-				st, _ = st.WithDetails(errInfo)
-				return nil, st.Err()
+			st := status.New(codes.AlreadyExists, "Command exec fail.")
+			st, _ = st.WithDetails(errInfo)
+			return nil, st.Err()
+		}
+		retcode02 := utils.ExecuteShellCommand(modifyUserCmd)
+		if retcode02 != 0 {
+			errInfo := &errdetails.ErrorInfo{
+				Reason: "EXEC_COMMAND_FAILED",
 			}
+			st := status.New(codes.AlreadyExists, "Command exec fail.")
+			st, _ = st.WithDetails(errInfo)
+			return nil, st.Err()
+		}
 		//}
 
 		// var wg sync.WaitGroup
@@ -213,26 +213,26 @@ func (s *serverUser) AddUserToAccount(ctx context.Context, in *pb.AddUserToAccou
 	if err != nil {
 		// 0907 注释
 		//for _, v := range partitions {
-			createUserCmd := fmt.Sprintf("sacctmgr -i create user name='%s' account='%s'", in.UserId, in.AccountName)
-			modifyUserCmd := fmt.Sprintf("sacctmgr -i modify user %s set qos='%s' DefaultQOS='%s'", in.UserId, baseQos, defaultQos)
-			retCode1 := utils.ExecuteShellCommand(createUserCmd)
-			if retCode1 != 0 {
-				errInfo := &errdetails.ErrorInfo{
-					Reason: "EXEC_COMMAND_FAILED",
-				}
-				st := status.New(codes.AlreadyExists, "Command exec fail. ")
-				st, _ = st.WithDetails(errInfo)
-				return nil, st.Err()
+		createUserCmd := fmt.Sprintf("sacctmgr -i create user name='%s' account='%s'", in.UserId, in.AccountName)
+		modifyUserCmd := fmt.Sprintf("sacctmgr -i modify user %s set qos='%s' DefaultQOS='%s'", in.UserId, baseQos, defaultQos)
+		retCode1 := utils.ExecuteShellCommand(createUserCmd)
+		if retCode1 != 0 {
+			errInfo := &errdetails.ErrorInfo{
+				Reason: "EXEC_COMMAND_FAILED",
 			}
-			retCode2 := utils.ExecuteShellCommand(modifyUserCmd)
-			if retCode2 != 0 {
-				errInfo := &errdetails.ErrorInfo{
-					Reason: "EXEC_COMMAND_FAILED",
-				}
-				st := status.New(codes.AlreadyExists, "Command exec fail.")
-				st, _ = st.WithDetails(errInfo)
-				return nil, st.Err()
+			st := status.New(codes.AlreadyExists, "Command exec fail. ")
+			st, _ = st.WithDetails(errInfo)
+			return nil, st.Err()
+		}
+		retCode2 := utils.ExecuteShellCommand(modifyUserCmd)
+		if retCode2 != 0 {
+			errInfo := &errdetails.ErrorInfo{
+				Reason: "EXEC_COMMAND_FAILED",
 			}
+			st := status.New(codes.AlreadyExists, "Command exec fail.")
+			st, _ = st.WithDetails(errInfo)
+			return nil, st.Err()
+		}
 		//}
 
 		// var wg sync.WaitGroup
@@ -829,26 +829,26 @@ func (s *serverAccount) CreateAccount(ctx context.Context, in *pb.CreateAccountR
 			return nil, st.Err()
 		}
 		//for _, p := range partitions {
-			createUserCmd := fmt.Sprintf("sacctmgr -i create user name=%s account=%s", in.OwnerUserId, in.AccountName)
-			modifyUserCmd := fmt.Sprintf("sacctmgr -i modify user %s set qos=%s DefaultQOS=%s", in.OwnerUserId, baseQos, defaultQos)
-			retcode01 := utils.ExecuteShellCommand(createUserCmd)
-			if retcode01 != 0 {
-				errInfo := &errdetails.ErrorInfo{
-					Reason: "COMMAND_EXEC_FAILED",
-				}
-				st := status.New(codes.Internal, "Exec command failed.")
-				st, _ = st.WithDetails(errInfo)
-				return nil, st.Err()
+		createUserCmd := fmt.Sprintf("sacctmgr -i create user name=%s account=%s", in.OwnerUserId, in.AccountName)
+		modifyUserCmd := fmt.Sprintf("sacctmgr -i modify user %s set qos=%s DefaultQOS=%s", in.OwnerUserId, baseQos, defaultQos)
+		retcode01 := utils.ExecuteShellCommand(createUserCmd)
+		if retcode01 != 0 {
+			errInfo := &errdetails.ErrorInfo{
+				Reason: "COMMAND_EXEC_FAILED",
 			}
-			retcode02 := utils.ExecuteShellCommand(modifyUserCmd)
-			if retcode02 != 0 {
-				errInfo := &errdetails.ErrorInfo{
-					Reason: "COMMAND_EXEC_FAILED",
-				}
-				st := status.New(codes.Internal, "Exec command failed.")
-				st, _ = st.WithDetails(errInfo)
-				return nil, st.Err()
+			st := status.New(codes.Internal, "Exec command failed.")
+			st, _ = st.WithDetails(errInfo)
+			return nil, st.Err()
+		}
+		retcode02 := utils.ExecuteShellCommand(modifyUserCmd)
+		if retcode02 != 0 {
+			errInfo := &errdetails.ErrorInfo{
+				Reason: "COMMAND_EXEC_FAILED",
 			}
+			st := status.New(codes.Internal, "Exec command failed.")
+			st, _ = st.WithDetails(errInfo)
+			return nil, st.Err()
+		}
 		//}
 		return &pb.CreateAccountResponse{}, nil
 	}
@@ -3614,6 +3614,14 @@ func main() {
 	var (
 		err error
 	)
+
+	// 添加环境变量
+	currentPath := os.Getenv("PATH")
+	slurmpath := utils.GetSlurmPath()
+	currentPath = slurmpath + "/bin:" + currentPath
+	currentPath = slurmpath + "/sbin:" + currentPath
+	os.Setenv("PATH", currentPath)
+
 	os.Setenv("SLURM_TIME_FORMAT", "standard") // 新加slurm环境变量
 	// 连接数据库
 	dbConfig := utils.DatabaseConfig()

@@ -1,0 +1,13 @@
+[Unit]
+Description=SCOW SLURM Adapter Service
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/scow-slurm-adapter/
+ExecStart=/opt/scow-slurm-adapter/scow-slurm-adapter
+Restart=always
+RestartSec=5
+User=root
+
+[Install]
+WantedBy=multi-user.target

@@ -579,3 +579,13 @@ func CheckSlurmStatus(result string) bool {
 		return false
 	}
 }
+
+func GetSlurmPath() string {
+	config := ParseConfig(DefaultConfigPath)
+	slurmpath := config.Slurm.Slurmpath
+	if slurmpath == "" {
+		// 如果未定义，则将其设置为默认值 "/usr"
+		slurmpath = "/usr"
+	}
+	return slurmpath
+}
