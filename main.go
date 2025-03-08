@@ -952,6 +952,20 @@ func (s *serverAccount) BlockAccount(ctx context.Context, in *pb.BlockAccountReq
 		}
 		allowAcct := strings.Join(acctList, ",")
 		for _, v := range partitions {
+			getconfacctcmd := fmt.Sprintf("grep -i AllowAccounts -r $(dirname $(scontrol show conf | grep SLURM_CONF | awk '{print $NF}'))| grep %s | awk -F AllowAccounts= '{print $2}' | awk '{print $1}'", v)
+			confacct, err := utils.RunCommand(getconfacctcmd)
+			if err != nil {
+				errInfo := &errdetails.ErrorInfo{
+					Reason: "COMMAND_EXEC_FAILED",
+				}
+				st := status.New(codes.Internal, "Exec command failed or slurmctld down.")
+				st, _ = st.WithDetails(errInfo)
+				return nil, st.Err()
+			}
+			if confacct != "" {
+				allowAcct = confacct
+			}
+
 			updatePartitionAllowAcctCmd := fmt.Sprintf("scontrol update partition='%s' AllowAccounts='%s'", v, allowAcct)
 			retcode := utils.ExecuteShellCommand(updatePartitionAllowAcctCmd)
 			if retcode != 0 {
@@ -975,7 +989,20 @@ func (s *serverAccount) BlockAccount(ctx context.Context, in *pb.BlockAccountReq
 	// 账户存在AllowAcctList中，则删除账户后更新计算分区AllowAccounts
 	updateAllowAcct := utils.DeleteSlice(AllowAcctList, in.AccountName)
 	for _, p := range partitions {
+		getconfacctcmd := fmt.Sprintf("grep -i AllowAccounts -r $(dirname $(scontrol show conf | grep SLURM_CONF | awk '{print $NF}'))| grep %s | awk -F AllowAccounts= '{print $2}' | awk '{print $1}'", p)
+		confacct, err := utils.RunCommand(getconfacctcmd)
+		if err != nil {
+			errInfo := &errdetails.ErrorInfo{
+				Reason: "COMMAND_EXEC_FAILED",
+			}
+			st := status.New(codes.Internal, "Exec command failed or slurmctld down.")
+			st, _ = st.WithDetails(errInfo)
+			return nil, st.Err()
+		}
 		updatePartitionAllowAcctCmd := fmt.Sprintf("scontrol update partition=%s AllowAccounts=%s", p, strings.Join(updateAllowAcct, ","))
+		if confacct != "" {
+			updatePartitionAllowAcctCmd = fmt.Sprintf("scontrol update partition=%s AllowAccounts=%s", p, confacct)
+		}
 		code := utils.ExecuteShellCommand(updatePartitionAllowAcctCmd)
 		if code != 0 {
 			errInfo := &errdetails.ErrorInfo{
@@ -1046,7 +1073,20 @@ func (s *serverAccount) UnblockAccount(ctx context.Context, in *pb.UnblockAccoun
 		// 不在里面的话需要解封
 		AllowAcctList = append(AllowAcctList, in.AccountName)
 		for _, p := range partitions {
+			getconfacctcmd := fmt.Sprintf("grep -i AllowAccounts -r $(dirname $(scontrol show conf | grep SLURM_CONF | awk '{print $NF}'))| grep %s | awk -F AllowAccounts= '{print $2}' | awk '{print $1}'", p)
+			confacct, err := utils.RunCommand(getconfacctcmd)
+			if err != nil {
+				errInfo := &errdetails.ErrorInfo{
+					Reason: "COMMAND_EXEC_FAILED",
+				}
+				st := status.New(codes.Internal, "Exec command failed or slurmctld down.")
+				st, _ = st.WithDetails(errInfo)
+				return nil, st.Err()
+			}
 			updatePartitionAllowAcctCmd := fmt.Sprintf("scontrol update partition=%s AllowAccounts=%s", p, strings.Join(AllowAcctList, ","))
+			if confacct != "" {
+				updatePartitionAllowAcctCmd = fmt.Sprintf("scontrol update partition=%s AllowAccounts=%s", p, confacct)
+			}
 			retcode := utils.ExecuteShellCommand(updatePartitionAllowAcctCmd)
 			if retcode != 0 {
 				errInfo := &errdetails.ErrorInfo{
