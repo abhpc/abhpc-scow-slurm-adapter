@@ -6,7 +6,7 @@ mysql:
   dbname: slurm_acct_db
   password: 81SLURM@@rabGTjN7
   clustername: cluster
-  databaseencode: latin1
+  databaseencode: utf8
 
 # 服务端口设置
 service:
