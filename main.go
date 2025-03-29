@@ -881,6 +881,17 @@ func (s *serverAccount) BlockAccount(ctx context.Context, in *pb.BlockAccountReq
 		return nil, st.Err()
 	}
 
+	actblockcmd := fmt.Sprintf("sacctmgr -i modify account %s set maxsubmit=0", in.AccountName)
+	_, err1 := utils.RunCommand(actblockcmd)
+	if err1 != nil {
+		errInfo := &errdetails.ErrorInfo{
+			Reason: "COMMAND_EXEC_FAILED",
+		}
+		st := status.New(codes.Internal, "Exec command failed or slurmctld down.")
+		st, _ = st.WithDetails(errInfo)
+		return nil, st.Err()
+	}
+
 	clusterName := configValue.MySQLConfig.ClusterName
 	// 检查账户是否在slurm中
 	acctSqlConfig := "SELECT name FROM acct_table WHERE name = ? AND deleted = 0"
@@ -951,26 +962,6 @@ func (s *serverAccount) BlockAccount(ctx context.Context, in *pb.BlockAccountReq
 			return nil, st.Err()
 		}
 		allowAcct := strings.Join(acctList, ",")
-		/*tmpblockcmd := fmt.Sprintf("sacctmgr -i modify account set maxsubmitjobs=0")
-		_, err = utils.RunCommand(tmpblockcmd)
-		if err != nil {
-			errInfo := &errdetails.ErrorInfo{
-				Reason: "COMMAND_EXEC_FAILED",
-			}
-			st := status.New(codes.Internal, "Exec command failed or slurmctld down.")
-			st, _ = st.WithDetails(errInfo)
-			return nil, st.Err()
-		}
-		allowmaxjobcmd := fmt.Sprintf("sacctmgr -i modify account %s set maxsubmitjobs=-1", allowAcct)
-		_, err = utils.RunCommand(allowmaxjobcmd)
-		if err != nil {
-			errInfo := &errdetails.ErrorInfo{
-				Reason: "COMMAND_EXEC_FAILED",
-			}
-			st := status.New(codes.Internal, "Exec command failed or slurmctld down.")
-			st, _ = st.WithDetails(errInfo)
-			return nil, st.Err()
-		}*/
 		for _, v := range partitions {
 			getconfacctcmd := fmt.Sprintf("grep -i AllowAccounts -r $(dirname $(scontrol show conf | grep SLURM_CONF | awk '{print $NF}'))|grep -v '^#'| grep %s | awk -F AllowAccounts= '{print $2}' | awk '{print $1}'", v)
 			confacct, err := utils.RunCommand(getconfacctcmd)
@@ -1092,7 +1083,7 @@ func (s *serverAccount) UnblockAccount(ctx context.Context, in *pb.UnblockAccoun
 	if index == -1 {
 		// 不在里面的话需要解封
 		AllowAcctList = append(AllowAcctList, in.AccountName)
-		/*allowmaxjobcmd := fmt.Sprintf("sacctmgr -i modify account %s set maxsubmitjobs=-1", strings.Join(AllowAcctList, ","))
+		allowmaxjobcmd := fmt.Sprintf("sacctmgr -i modify account %s set maxsubmitjobs=-1", strings.Join(AllowAcctList, ","))
 		_, err := utils.RunCommand(allowmaxjobcmd)
 		if err != nil {
 			errInfo := &errdetails.ErrorInfo{
@@ -1101,7 +1092,7 @@ func (s *serverAccount) UnblockAccount(ctx context.Context, in *pb.UnblockAccoun
 			st := status.New(codes.Internal, "Exec command failed or slurmctld down.")
 			st, _ = st.WithDetails(errInfo)
 			return nil, st.Err()
-		}*/
+		}
 		for _, p := range partitions {
 			getconfacctcmd := fmt.Sprintf("grep -i AllowAccounts -r $(dirname $(scontrol show conf | grep SLURM_CONF | awk '{print $NF}'))|grep -v '^#'| grep %s | awk -F AllowAccounts= '{print $2}' | awk '{print $1}'", p)
 			confacct, err := utils.RunCommand(getconfacctcmd)
