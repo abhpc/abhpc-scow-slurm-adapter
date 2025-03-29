@@ -1,18 +1,15 @@
-# slurm adapter for SCOW
+# ABHPC slurm adapter for openSCOW
 
-当前实现的`scow-scheduluer-adapter-interface`版本：v1.5.0
-
-## Build
-
-Requires [Buf]([Buf](https://buf.build/docs/installation/)).
+系统需求：
+[Buf](https://buf.build/docs/installation/).
+[Git>=2.18.0](https://github.com/git/git)
 
 ```bash
+module load git/2.18.0
+
 # Generate code from latest scow-slurm-adapter
 make protos
 
 # Build
 make build
-
 ```
-
-**项目部署文档地址**：[deploy 文档](https://github.com/PKUHPC/scow-slurm-adapter/blob/master/docs/deploy.md)
