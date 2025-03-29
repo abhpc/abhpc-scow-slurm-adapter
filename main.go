@@ -3683,6 +3683,17 @@ func main() {
 	currentPath = slurmpath + "/sbin:" + currentPath
 	os.Setenv("PATH", currentPath)
 
+	// 初始化设置全部账户maxsubmitjobs=-1
+	allowmaxjobcmd := fmt.Sprintf("scontrol reconfig; sacctmgr -i modify account set maxsubmitjobs=-1")
+	_, err = utils.RunCommand(allowmaxjobcmd)
+	if err != nil {
+		errInfo := &errdetails.ErrorInfo{
+			Reason: "COMMAND_EXEC_FAILED",
+		}
+		st := status.New(codes.Internal, "Exec command failed or slurmctld down.")
+		st, _ = st.WithDetails(errInfo)
+		return
+	}
 	os.Setenv("SLURM_TIME_FORMAT", "standard") // 新加slurm环境变量
 	// 连接数据库
 	dbConfig := utils.DatabaseConfig()
