@@ -124,7 +124,7 @@ func DatabaseConfig() string {
 	databaseencode := config.MySQLConfig.DatabaseEncode
 
 	// dbConfig := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s", userName, passWord, host, port, dbName, "latin1")
-	dbConfig := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s", userName, passWord, host, port, dbName, databaseencode)
+	dbConfig := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?useUnicode=true&charset=%s", userName, passWord, host, port, dbName, databaseencode)
 	return dbConfig
 }
 
