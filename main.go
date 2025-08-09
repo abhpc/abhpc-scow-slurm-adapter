@@ -3682,6 +3682,7 @@ func main() {
 	currentPath = slurmpath + "/bin:" + currentPath
 	currentPath = slurmpath + "/sbin:" + currentPath
 	os.Setenv("PATH", currentPath)
+	os.Setenv("LANG", "en_US.UTF-8")
 
 	// 初始化设置全部账户maxsubmitjobs=-1
 	allowmaxjobcmd := fmt.Sprintf("scontrol reconfig; sacctmgr -i modify account set maxsubmitjobs=-1")
