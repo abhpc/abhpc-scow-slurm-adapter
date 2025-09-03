@@ -3291,17 +3291,47 @@ func (s *serverJob) GetJobs(ctx context.Context, in *pb.GetJobsRequest) (*pb.Get
 				nodesAlloc = nodesAllocTemp
 				nodeReq = nodesAlloc
 				elapsedSeconds = 0
-				gpusAlloc = 0
+				if output == "cons_tres" || output == "cons_res" {
+					getGpusPernodeCmd := fmt.Sprintf("scontrol show job %d |awk -F'gpu:' '/TresPerNode/ {print $NF}'", jobId)
+					gpusPerNodeStr, err := utils.RunCommand(getGpusPernodeCmd)
+					if err != nil {
+						logger.Info("Error running getGpusPernodeCmd:", err)
+						gpusAlloc = 0
+					} else if gpusPerNodeStr == "" {
+						gpusAlloc = 0
+					} else {
+						gpusPerNode, err := strconv.Atoi(gpusPerNodeStr)
+						if err != nil {
+							logger.Info("Error converting gpusPerNode to integer:", err)
+							gpusAlloc = 0
+						} else {
+							gpusAlloc = int32(gpusPerNode) * nodesAlloc
+						}
+					}
+				} else {
+					gpusAlloc = 0
+				}
 			} else {
 				cpusAlloc = int32(utils.GetResInfoNumFromTresInfo(tresAlloc, cpuTresId))
 				memAllocMb = int64(utils.GetResInfoNumFromTresInfo(tresAlloc, memTresId))
 				nodeReq = nodesAlloc
 				elapsedSeconds = time.Now().Unix() - startTime
 				if output == "cons_tres" || output == "cons_res" {
-					if len(gpuIdList) == 0 {
+					getGpusPernodeCmd := fmt.Sprintf("scontrol show job %d |awk -F'gpu:' '/TresPerNode/ {print $NF}'", jobId)
+					gpusPerNodeStr, err := utils.RunCommand(getGpusPernodeCmd)
+					if err != nil {
+						logger.Info("Error running getGpusPernodeCmd:", err)
+						gpusAlloc = 0
+					} else if gpusPerNodeStr == "" {
 						gpusAlloc = 0
 					} else {
-						gpusAlloc = utils.GetGpuAllocsFromGpuIdList(tresAlloc, gpuIdList)
+						gpusPerNode, err := strconv.Atoi(gpusPerNodeStr)
+						if err != nil {
+							logger.Info("Error converting gpusPerNode to integer:", err)
+							gpusAlloc = 0
+						} else {
+							gpusAlloc = int32(gpusPerNode) * nodesAlloc
+						}
 					}
 				} else {
 					gpusAlloc = 0
@@ -3331,10 +3361,21 @@ func (s *serverJob) GetJobs(ctx context.Context, in *pb.GetJobsRequest) (*pb.Get
 			nodeReq = nodesAlloc
 			elapsedSeconds = time.Now().Unix() - startTime
 			if output == "cons_tres" || output == "cons_res" {
-				if len(gpuIdList) == 0 {
+				getGpusPernodeCmd := fmt.Sprintf("scontrol show job %d |awk -F'gpu:' '/TresPerNode/ {print $NF}'", jobId)
+				gpusPerNodeStr, err := utils.RunCommand(getGpusPernodeCmd)
+				if err != nil {
+					logger.Info("Error running getGpusPernodeCmd:", err)
+					gpusAlloc = 0
+				} else if gpusPerNodeStr == "" {
 					gpusAlloc = 0
 				} else {
-					gpusAlloc = utils.GetGpuAllocsFromGpuIdList(tresAlloc, gpuIdList)
+					gpusPerNode, err := strconv.Atoi(gpusPerNodeStr)
+					if err != nil {
+						logger.Info("Error converting gpusPerNode to integer:", err)
+						gpusAlloc = 0
+					} else {
+						gpusAlloc = int32(gpusPerNode) * nodesAlloc
+					}
 				}
 			} else {
 				gpusAlloc = 0
@@ -3348,10 +3389,21 @@ func (s *serverJob) GetJobs(ctx context.Context, in *pb.GetJobsRequest) (*pb.Get
 				elapsedSeconds = endTime - startTime
 			}
 			if output == "cons_tres" || output == "cons_res" {
-				if len(gpuIdList) == 0 {
+				getGpusPernodeCmd := fmt.Sprintf("scontrol show job %d |awk -F'gpu:' '/TresPerNode/ {print $NF}'", jobId)
+				gpusPerNodeStr, err := utils.RunCommand(getGpusPernodeCmd)
+				if err != nil {
+					logger.Info("Error running getGpusPernodeCmd:", err)
+					gpusAlloc = 0
+				} else if gpusPerNodeStr == "" {
 					gpusAlloc = 0
 				} else {
-					gpusAlloc = utils.GetGpuAllocsFromGpuIdList(tresAlloc, gpuIdList)
+					gpusPerNode, err := strconv.Atoi(gpusPerNodeStr)
+					if err != nil {
+						logger.Info("Error converting gpusPerNode to integer:", err)
+						gpusAlloc = 0
+					} else {
+						gpusAlloc = int32(gpusPerNode) * nodesAlloc
+					}
 				}
 			} else {
 				gpusAlloc = 0
