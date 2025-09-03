@@ -2822,7 +2822,7 @@ func (s *serverJob) GetJobs(ctx context.Context, in *pb.GetJobsRequest) (*pb.Get
 	setBool := utils.IsSubSet(baseStates, filterStates)
 
 	pendingUserCmdTemp := fmt.Sprintf("squeue -t pending -u %s", strings.Join(submitUser, ","))
-	pendingUserCmd := pendingUserCmdTemp + " --noheader --format='%i=%R' | tr '\\n' ';'"
+	pendingUserCmd := pendingUserCmdTemp + " --noheader --format='%i=%R' | tr '\n' ';'"
 	pendingUserResult, err := utils.RunCommand(pendingUserCmd)
 	if err != nil || utils.CheckSlurmStatus(pendingUserResult) {
 		errInfo := &errdetails.ErrorInfo{
@@ -2835,12 +2835,12 @@ func (s *serverJob) GetJobs(ctx context.Context, in *pb.GetJobsRequest) (*pb.Get
 	if len(pendingUserResult) != 0 {
 		pendingUserMap = utils.GetPendingMapInfo(pendingUserResult)
 	}
-	if setBool && len(filterStates) != 0 && len(submitUser) != 0 {
+	if setBool && len(filterStates) != 0 {
 		// 新增判断逻辑 1117
-		if len(in.Filter.Accounts) == 0 {
+		if len(in.Filter.Accounts) == 0 && len(submitUser) != 0 {
 			getJobInfoCmdLine = fmt.Sprintf("squeue -u %s --noheader", strings.Join(submitUser, ","))
 		} else {
-			getJobInfoCmdLine = fmt.Sprintf("squeue -u %s -A %s --noheader", strings.Join(submitUser, ","), strings.Join(in.Filter.Accounts, ","))
+			getJobInfoCmdLine = fmt.Sprintf("squeue -A %s --noheader", strings.Join(in.Filter.Accounts, ","))
 		}
 		// getJobInfoCmdLine := fmt.Sprintf("squeue -u %s --noheader", strings.Join(submitUser, ","))
 		// getFullCmdLine := getJobInfoCmdLine + " " + "--format='%b %a %A %C %D %j %l %m %M %P %q %S %T %u %V %Z %n %N' | tr '\n' ','"
@@ -2870,7 +2870,7 @@ func (s *serverJob) GetJobs(ctx context.Context, in *pb.GetJobsRequest) (*pb.Get
 			var singerJobGpusAlloc int32
 			var singerJobTimeSubmit *timestamppb.Timestamp
 			var singerJobtimeLimitMinutes int64
-			if len(strings.Split(v, " ")) == 17 {
+			if len(strings.Split(v, " ")) >= 16 {
 				singerJobInfo := strings.Split(v, " ")
 				singerJobAccount := singerJobInfo[1]
 				singerJobUserName := singerJobInfo[13]
@@ -2898,18 +2898,20 @@ func (s *serverJob) GetJobs(ctx context.Context, in *pb.GetJobsRequest) (*pb.Get
 					if _, ok := pendingUserMap[singerJobJobId]; ok {
 						singerJobJobReason = pendingUserMap[singerJobJobId]
 					}
-					singerJobCpusAlloc = 0
+					//singerJobCpusAlloc = 0
 					singerJobElapsedSeconds = 0
 					singerJobInfoNodeList = "None assigned"
 				} else {
-					singerJobJobNodesAllocTemp, _ := strconv.Atoi(singerJobInfo[4])
-					singerJobJobNodesAlloc = int32(singerJobJobNodesAllocTemp)
 					singerJobJobReason = singerJobInfo[12]
-					singerJobCpusAllocTemp, _ := strconv.Atoi(singerJobInfo[3])
-					singerJobCpusAlloc = int32(singerJobCpusAllocTemp)
+					//singerJobCpusAllocTemp, _ := strconv.Atoi(singerJobInfo[3])
+					//singerJobCpusAlloc = int32(singerJobCpusAllocTemp)
 					singerJobElapsedSeconds = utils.GetRunningElapsedSeconds(singerJobInfo[8])
 					singerJobInfoNodeList = singerJobInfo[16]
 				}
+				singerJobJobNodesAllocTemp, _ := strconv.Atoi(singerJobInfo[4])
+				singerJobJobNodesAlloc = int32(singerJobJobNodesAllocTemp)
+				singerJobCpusAllocTemp, _ := strconv.Atoi(singerJobInfo[3])
+				singerJobCpusAlloc = int32(singerJobCpusAllocTemp)
 
 				// 新加代码，在正在运行中的作业添加gpu分配逻辑
 				if singerJobInfo[0] == "N/A" {
