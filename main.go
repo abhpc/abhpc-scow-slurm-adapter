@@ -2603,7 +2603,7 @@ func (s *serverJob) GetJobById(ctx context.Context, in *pb.GetJobByIdRequest) (*
 		// stdoutPath = StdoutPath
 
 		if state == 0 {
-			cpusAlloc = 0
+			cpusAlloc = int32(utils.GetResInfoNumFromTresInfo(tresReq, cpuTresId))
 			memAllocMb = 0
 			// getNodeReqCmd := fmt.Sprintf("squeue  -h | grep ' %d '  | awk '{print $7}'", jobId)
 			// nodeReqOutput, _ := utils.RunCommand(getNodeReqCmd)
@@ -3285,9 +3285,11 @@ func (s *serverJob) GetJobs(ctx context.Context, in *pb.GetJobsRequest) (*pb.Get
 			}
 
 			if state == 0 {
-				cpusAlloc = 0
+				cpusAlloc = int32(utils.GetResInfoNumFromTresInfo(tresReq, cpuTresId))
 				memAllocMb = 0
-				nodeReq = int32(utils.GetResInfoNumFromTresInfo(tresReq, nodeTresId))
+				nodesAllocTemp = int32(utils.GetResInfoNumFromTresInfo(tresReq, nodeTresId))
+				nodesAlloc = nodesAllocTemp
+				nodeReq = nodesAlloc
 				elapsedSeconds = 0
 				gpusAlloc = 0
 			} else {
