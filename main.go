@@ -2835,12 +2835,12 @@ func (s *serverJob) GetJobs(ctx context.Context, in *pb.GetJobsRequest) (*pb.Get
 	if len(pendingUserResult) != 0 {
 		pendingUserMap = utils.GetPendingMapInfo(pendingUserResult)
 	}
-	if setBool && len(filterStates) != 0 {
+	if setBool && len(filterStates) != 0 && len(submitUser) != 0 {
 		// 新增判断逻辑 1117
-		if len(in.Filter.Accounts) == 0 && len(submitUser) != 0 {
+		if len(in.Filter.Accounts) == 0 {
 			getJobInfoCmdLine = fmt.Sprintf("squeue -u %s --noheader", strings.Join(submitUser, ","))
 		} else {
-			getJobInfoCmdLine = fmt.Sprintf("squeue -A %s --noheader", strings.Join(in.Filter.Accounts, ","))
+			getJobInfoCmdLine = fmt.Sprintf("squeue -u %s -A %s --noheader", strings.Join(submitUser, ","), strings.Join(in.Filter.Accounts, ","))
 		}
 		// getJobInfoCmdLine := fmt.Sprintf("squeue -u %s --noheader", strings.Join(submitUser, ","))
 		// getFullCmdLine := getJobInfoCmdLine + " " + "--format='%b %a %A %C %D %j %l %m %M %P %q %S %T %u %V %Z %n %N' | tr '\n' ','"
