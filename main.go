@@ -2762,6 +2762,33 @@ func (s *serverJob) GetJobById(ctx context.Context, in *pb.GetJobByIdRequest) (*
 	}
 }
 
+func (s *serverJob) GetJobType(ctx context.Context, in *pb.GetJobTypeRequest) (*pb.GetJobTypeResponse, error) {
+	var (
+		userByCmd     string
+		jobType       string
+		jobTypeString string
+	)
+
+	getjobtypeCmd := fmt.Sprintf("getmodinfo %s", in.JobId)
+	jobTypeString, err := utils.RunCommand(getjobtypeCmd)
+	logger.Infof("GetJobType: output of cmd: %s", jobTypeString)
+	if err != nil {
+		errInfo := &errdetails.ErrorInfo{
+			Reason: "GET_JOB_TYPE_FAILED",
+		}
+		st := status.New(codes.Internal, "can not get job_type.")
+		st, _ = st.WithDetails(errInfo)
+		return nil, st.Err()
+	}
+	userByCmd = strings.Split(jobTypeString, " ")[1]
+	if jobTypeString == "" || userByCmd != in.User {
+		jobType = "unknow"
+		return &pb.GetJobTypeResponse{JobType: jobType}, nil
+	}
+	jobType = strings.Split(jobTypeString, " ")[2]
+	return &pb.GetJobTypeResponse{JobType: jobType}, nil
+}
+
 func (s *serverJob) GetJobs(ctx context.Context, in *pb.GetJobsRequest) (*pb.GetJobsResponse, error) {
 	var (
 		jobId             int
@@ -3737,6 +3764,7 @@ func main() {
 	slurmpath := utils.GetSlurmPath()
 	currentPath = slurmpath + "/bin:" + currentPath
 	currentPath = slurmpath + "/sbin:" + currentPath
+	currentPath = slurmpath + "/usrbin:" + currentPath
 	os.Setenv("PATH", currentPath)
 	os.Setenv("LANG", "en_US.UTF-8")
 
