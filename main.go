@@ -868,6 +868,7 @@ func (s *serverAccount) BlockAccount(ctx context.Context, in *pb.BlockAccountReq
 		assocAcctName string
 		acctList      []string
 	)
+	slurmpath := utils.GetSlurmPath()
 	// 记录日志
 	logger.Infof("Received request BlockAccount: %v", in)
 	// 检查账户名中是否包含大写字母
@@ -963,8 +964,9 @@ func (s *serverAccount) BlockAccount(ctx context.Context, in *pb.BlockAccountReq
 		}
 		allowAcct := strings.Join(acctList, ",")
 		for _, v := range partitions {
-			getconfacctcmd := fmt.Sprintf("grep -i AllowAccounts -r $(dirname $(scontrol show conf | grep SLURM_CONF | awk '{print $NF}'))|grep -v '^#'| grep %s | awk -F AllowAccounts= '{print $2}' | awk '{print $1}'", v)
-			confacct, err := utils.RunCommand(getconfacctcmd)
+			getconfacctcmd := fmt.Sprintf("grep %s -r %s/etc/|awk '{ for(i=1; i<=NF; i++) if(tolower($i) ~ /allowaccounts/) print $i }'|awk -F= '{print $NF}'", v, slurmpath)
+			confacct := string("")
+			confacct, err = utils.RunCommand(getconfacctcmd)
 			if err != nil {
 				errInfo := &errdetails.ErrorInfo{
 					Reason: "COMMAND_EXEC_FAILED",
@@ -1000,8 +1002,10 @@ func (s *serverAccount) BlockAccount(ctx context.Context, in *pb.BlockAccountReq
 	// 账户存在AllowAcctList中，则删除账户后更新计算分区AllowAccounts
 	updateAllowAcct := utils.DeleteSlice(AllowAcctList, in.AccountName)
 	for _, p := range partitions {
-		getconfacctcmd := fmt.Sprintf("grep -i AllowAccounts -r $(dirname $(scontrol show conf | grep SLURM_CONF | awk '{print $NF}'))|grep -v '^#'| grep %s | awk -F AllowAccounts= '{print $2}' | awk '{print $1}'", p)
-		confacct, err := utils.RunCommand(getconfacctcmd)
+		getconfacctcmd := fmt.Sprintf("grep %s -r %s/etc/|awk '{ for(i=1; i<=NF; i++) if(tolower($i) ~ /allowaccounts/) print $i }'|awk -F= '{print $NF}'", p, slurmpath)
+		//getconfacctcmd := fmt.Sprintf("grep -i AllowAccounts -r $(dirname $(scontrol show conf | grep SLURM_CONF | awk '{print $NF}'))|grep -v '^#'| grep %s | awk -F AllowAccounts= '{print $2}' | awk '{print $1}'", p)
+		confacct := string("")
+		confacct, err = utils.RunCommand(getconfacctcmd)
 		if err != nil {
 			errInfo := &errdetails.ErrorInfo{
 				Reason: "COMMAND_EXEC_FAILED",
@@ -1032,6 +1036,7 @@ func (s *serverAccount) UnblockAccount(ctx context.Context, in *pb.UnblockAccoun
 		acctName string
 	)
 	// 记录日志
+	slurmpath := utils.GetSlurmPath()
 	logger.Infof("Received request UnblockAccount: %v", in)
 	// 检查用户名中是否包含大写字母
 	resultAcct := utils.CheckAccountOrUserStrings(in.AccountName)
@@ -1094,8 +1099,10 @@ func (s *serverAccount) UnblockAccount(ctx context.Context, in *pb.UnblockAccoun
 			return nil, st.Err()
 		}
 		for _, p := range partitions {
-			getconfacctcmd := fmt.Sprintf("grep -i AllowAccounts -r $(dirname $(scontrol show conf | grep SLURM_CONF | awk '{print $NF}'))|grep -v '^#'| grep %s | awk -F AllowAccounts= '{print $2}' | awk '{print $1}'", p)
-			confacct, err := utils.RunCommand(getconfacctcmd)
+			getconfacctcmd := fmt.Sprintf("grep %s -r %s/etc/|awk '{ for(i=1; i<=NF; i++) if(tolower($i) ~ /allowaccounts/) print $i }'|awk -F= '{print $NF}'", p, slurmpath)
+			//getconfacctcmd := fmt.Sprintf("grep -i AllowAccounts -r $(dirname $(scontrol show conf | grep SLURM_CONF | awk '{print $NF}'))|grep -v '^#'| grep %s | awk -F AllowAccounts= '{print $2}' | awk '{print $1}'", p)
+			confacct := string("")
+			confacct, err = utils.RunCommand(getconfacctcmd)
 			if err != nil {
 				errInfo := &errdetails.ErrorInfo{
 					Reason: "COMMAND_EXEC_FAILED",
