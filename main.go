@@ -3326,7 +3326,7 @@ func (s *serverJob) GetJobs(ctx context.Context, in *pb.GetJobsRequest) (*pb.Get
 				nodeReq = nodesAlloc
 				elapsedSeconds = 0
 				//if output == "cons_tres" || output == "cons_res" {
-				getGpusPernodeCmd := fmt.Sprintf("scontrol show job %d |awk -F'gpu:' '/TresPerNode/ {print $NF}'", jobId)
+				getGpusPernodeCmd := fmt.Sprintf("scontrol show job %d 2>&1 |awk -F'gpu:' '/TresPerNode/ {print $NF}'", jobId)
 				gpusPerNodeStr, err := utils.RunCommand(getGpusPernodeCmd)
 				if err != nil {
 					logger.Info("Error running getGpusPernodeCmd:", err)
@@ -3351,7 +3351,7 @@ func (s *serverJob) GetJobs(ctx context.Context, in *pb.GetJobsRequest) (*pb.Get
 				nodeReq = nodesAlloc
 				elapsedSeconds = time.Now().Unix() - startTime
 				//if output == "cons_tres" || output == "cons_res" {
-				getGpusPernodeCmd := fmt.Sprintf("scontrol show job %d |awk -F'gpu:' '/TresPerNode/ {print $NF}'", jobId)
+				getGpusPernodeCmd := fmt.Sprintf("scontrol show job %d 2>&1 |awk -F'gpu:' '/TresPerNode/ {print $NF}'", jobId)
 				gpusPerNodeStr, err := utils.RunCommand(getGpusPernodeCmd)
 				if err != nil {
 					logger.Info("Error running getGpusPernodeCmd:", err)
@@ -3395,7 +3395,7 @@ func (s *serverJob) GetJobs(ctx context.Context, in *pb.GetJobsRequest) (*pb.Get
 			nodeReq = nodesAlloc
 			elapsedSeconds = time.Now().Unix() - startTime
 			//if output == "cons_tres" || output == "cons_res" {
-			getGpusPernodeCmd := fmt.Sprintf("scontrol show job %d |awk -F'gpu:' '/TresPerNode/ {print $NF}'", jobId)
+			getGpusPernodeCmd := fmt.Sprintf("scontrol show job %d 2>&1 |awk -F'gpu:' '/TresPerNode/ {print $NF}'", jobId)
 			gpusPerNodeStr, err := utils.RunCommand(getGpusPernodeCmd)
 			if err != nil {
 				logger.Info("Error running getGpusPernodeCmd:", err)
@@ -3423,7 +3423,7 @@ func (s *serverJob) GetJobs(ctx context.Context, in *pb.GetJobsRequest) (*pb.Get
 				elapsedSeconds = endTime - startTime
 			}
 			//if output == "cons_tres" || output == "cons_res" {
-			getGpusPernodeCmd := fmt.Sprintf("scontrol show job %d |awk -F'gpu:' '/TresPerNode/ {print $NF}'", jobId)
+			getGpusPernodeCmd := fmt.Sprintf("scontrol show job %d 2>&1 |awk -F'gpu:' '/TresPerNode/ {print $NF}'", jobId)
 			gpusPerNodeStr, err := utils.RunCommand(getGpusPernodeCmd)
 			if err != nil {
 				logger.Info("Error running getGpusPernodeCmd:", err)
