@@ -2789,7 +2789,7 @@ func (s *serverJob) GetJobType(ctx context.Context, in *pb.GetJobTypeRequest) (*
 	}
 	userByCmd = strings.Split(jobTypeString, " ")[1]
 	if jobTypeString == "" || userByCmd != in.User {
-		jobType = "unknow"
+		jobType = "unknown"
 		return &pb.GetJobTypeResponse{JobType: jobType}, nil
 	}
 	jobType = strings.Split(jobTypeString, " ")[2]
